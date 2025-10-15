@@ -1,0 +1,4 @@
+-> Adding cors() middleware for cross-origin requests
+-> Await DBConection before server start.
+-> Email should be unique
+-> Adding timestamps to the schema.
