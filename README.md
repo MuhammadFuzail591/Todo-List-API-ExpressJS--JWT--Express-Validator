@@ -1,9 +1,8 @@
+# 🧩 To-Do List API
 
-# To-Do List API
+A **RESTful API** built with Node.js and Express.js for managing a personal to-do list, integrated with **MongoDB** for storage, **authentication** for secure operations, **input validation** using **express-validator**, and **pagination** for efficient data retrieval.
 
-A **RESTful API** built with Node.js and Express.js for managing a personal to-do list, integrated with **MongoDB** for storage, **authentication** for secure operations, and **input validation** using **express-validator**.
-
-This project was built as part of a backend development learning journey, gradually covering core concepts like REST APIs, database operations, authentication, and data validation.
+This project was built as part of a backend development learning journey — gradually covering core concepts like REST APIs, database operations, authentication, validation, and pagination.
 
 ---
 
@@ -16,169 +15,198 @@ This project was built as part of a backend development learning journey, gradua
 5. [Authentication](#authentication)
 6. [API Endpoints](#api-endpoints)
 7. [Data Validation](#data-validation)
-8. [Error Handling](#error-handling)
-9. [Project Structure](#project-structure)
-10. [Future Improvements](#future-improvements)
+8. [Pagination](#pagination)
+9. [Error Handling](#error-handling)
+10. [Project Structure](#project-structure)
+11. [Future Improvements](#future-improvements)
+12. [Acknowledgment](#acknowledgment)
 
 ---
 
-## Project Overview
+## 🧭 Project Overview
 
-The To-Do List API allows users to create, read, update, and delete tasks. It was developed to help understand the fundamentals of backend development, RESTful API design, and database interactions.
+The To-Do List API allows users to create, read, update, and delete tasks. It was developed to strengthen understanding of backend principles, RESTful API design, and database interactions.
 
 The project includes:
 
-- **User authentication** (JWT-based)
-- **Role-based access** for creating, updating, and deleting tasks
-- **Data validation** to ensure request integrity
-- **Clean error handling**
+* **User authentication** (JWT-based)
+* **Protected routes** for create/update/delete
+* **Data validation** using express-validator
+* **Pagination** for efficient task retrieval
+* **Centralized error handling**
 
 ---
 
-## Features
+## ⚙️ Features
 
-- **User Authentication**
+### 🔐 User Authentication
 
-  - Sign up and login
-  - JWT token generation
+* Sign up and login
+* JWT token generation and verification
 
-- **Task Management**
+### 🧱 Task Management
 
-  - Create a new task (authenticated users only)
-  - View all tasks (anyone)
-  - View a single task by ID (anyone)
-  - Update a task (authenticated users only, only if owner)
-  - Delete a task (authenticated users only, only if owner)
+* Create, read, update, delete tasks
+* Only authenticated users can modify their own tasks
+* Public access for reading tasks
 
-- **Validation**
+### ✅ Validation
 
-  - Input fields are validated using **express-validator**
-  - Example: Task priority can only be `low`, `medium`, or `high`
+* Input validation using **express-validator**
+* Example:
 
-- **Error Handling**
+  * `priority` must be one of `low`, `medium`, or `high`
+  * `date` must be a valid ISO date
 
-  - Centralized error handler for clean API responses
+### 📄 Pagination
 
----
+* Tasks can be fetched with `page` and `limit` query parameters
+* Example:
 
-## Technologies Used
+  ```
+  /api/tasks/get_all?page=2&limit=5
+  ```
+* Optimized for performance and scalability
 
-- **Node.js** – JavaScript runtime for building the backend
-- **Express.js** – Web framework for routing and middleware
-- **MongoDB** – Database for storing users and tasks
-- **Mongoose** – ODM for MongoDB
-- **bcryptjs** – Password hashing
-- **jsonwebtoken (JWT)** – Token-based authentication
-- **express-validator** – Input validation for API requests
-- **CORS** – Cross-Origin Resource Sharing
+### ⚠️ Error Handling
+
+* Centralized middleware returns clean, structured error responses
 
 ---
 
-## Setup and Installation
+## 💻 Technologies Used
+
+| Purpose          | Technology           |
+| ---------------- | -------------------- |
+| Server Framework | Express.js           |
+| Language         | Node.js (ES Modules) |
+| Database         | MongoDB              |
+| ODM              | Mongoose             |
+| Authentication   | JWT + bcryptjs       |
+| Validation       | express-validator    |
+| CORS             | cors                 |
+
+---
+
+## ⚙️ Setup and Installation
 
 1. **Clone the repository**
 
-```bash
-git clone https://github.com/MuhammadFuzail591/Todo-List-API-ExpressJS--JWT--Express-Validator
-
-cd Todo
-```
+   ```bash
+   git clone https://github.com/MuhammadFuzail591/Todo-List-API-ExpressJS--JWT--Express-Validator
+   cd Todo
+   ```
 
 2. **Install dependencies**
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-3. **Set up environment variables** in a `.env` file:
+3. **Create a `.env` file**
 
-```env
-PORT=3000
-MONGO_URI=<your-mongo-connection-string>
-SECRET_KEY=<your-jwt-secret-key>
-```
+   ```env
+   PORT=3000
+   MONGO_URI=<your-mongo-connection-string>
+   SECRET_KEY=<your-jwt-secret-key>
+   ```
 
 4. **Run the server**
 
-```bash
-npm run dev
+   ```bash
+   npm run dev
+   ```
+
+Server runs on:
+`http://localhost:3000`
+
+---
+
+## 🔑 Authentication
+
+* Users register and log in with email and password
+* Passwords are hashed using **bcryptjs**
+* JWT tokens must be passed in `Authorization: Bearer <token>` header for protected routes
+* Unauthenticated users can only view tasks
+
+---
+
+## 📡 API Endpoints
+
+### 👤 User Routes
+
+| Method | Endpoint            | Description             | Auth Required |
+| ------ | ------------------- | ----------------------- | ------------- |
+| POST   | `/api/users/create` | Register a new user     | ❌             |
+| POST   | `/api/users/login`  | Login and receive token | ❌             |
+| GET    | `/api/users/`       | Get all users           | ❌             |
+
+### ✅ Task Routes
+
+| Method | Endpoint                            | Description         | Auth Required |
+| ------ | ----------------------------------- | ------------------- | ------------- |
+| POST   | `/api/tasks/create/:userId`         | Create a new task   | ✅             |
+| GET    | `/api/tasks/get_all?page=&limit=`   | Get paginated tasks | ❌             |
+| GET    | `/api/tasks/get_one/:taskId`        | Get a single task   | ❌             |
+| PATCH  | `/api/tasks/update/:taskId/:userId` | Update a task       | ✅             |
+| GET    | `/api/tasks/del/:taskId/:userId`    | Delete a task       | ✅             |
+
+> **Note:** Only the owner of a task can update or delete it.
+
+---
+
+## 🧾 Data Validation
+
+* All input data is validated using **express-validator**
+* Example:
+
+  ```js
+  body('priority').isIn(['low', 'medium', 'high'])
+  ```
+* Validation errors return:
+
+  ```json
+  {
+    "errors": [
+      { "msg": "priority must be one of: low, medium, high" }
+    ]
+  }
+  ```
+
+---
+
+## 📊 Pagination
+
+Pagination implemented using query parameters:
+
+* `page`: Page number (default 1)
+* `limit`: Number of results per page (default 5)
+
+Example request:
+
+```
+GET /api/tasks/get_all?page=2&limit=5
 ```
 
-The server will start at `http://localhost:3000`.
+This improves performance by returning only relevant chunks of data instead of the entire dataset.
 
 ---
 
-## Authentication
+## ⚠️ Error Handling
 
-- Users can **sign up** and **login** using their email and password.
-- Passwords are **hashed** using `bcryptjs` for security.
-- **JWT tokens** are issued upon successful login and must be sent in the `Authorization` header as `Bearer <token>` for protected routes (create, update, delete tasks).
-- Unauthorized users can **read tasks**, but cannot create, update, or delete.
+* All validation and runtime errors are handled gracefully
+* Standardized error structure:
 
----
-
-## API Endpoints
-
-### Users
-
-| Method | Endpoint            | Description                 | Auth Required |
-| ------ | ------------------- | --------------------------- | ------------- |
-| POST   | `/api/users/create` | Register a new user         | No            |
-| POST   | `/api/users/login`  | Login and receive JWT token | No            |
-| GET    | `/api/users/`       | Get all users               | No            |
-
-### Tasks
-
-| Method | Endpoint                            | Description       | Auth Required |
-| ------ | ----------------------------------- | ----------------- | ------------- |
-| POST   | `/api/tasks/create/:userId`         | Create a task     | Yes           |
-| GET    | `/api/tasks/get_all`                | Get all tasks     | No            |
-| GET    | `/api/tasks/get_one/:taskId`        | Get a single task | No            |
-| PATCH  | `/api/tasks/update/:taskId/:userId` | Update a task     | Yes           |
-| GET    | `/api/tasks/del/:taskId/:userId`    | Delete a task     | Yes           |
-
-> **Note:** Only the user who owns a task can update or delete it.
+  ```json
+  {
+    "message": "Invalid Credentials"
+  }
+  ```
+* Validation errors return detailed messages with fields
 
 ---
 
-## Data Validation
-
-- Validation is done using **express-validator**.
-- Example rules:
-
-  - `name` and `content` must not be empty
-  - `priority` must be one of `low`, `medium`, `high`
-  - `date` must be a valid ISO date
-
-- Invalid requests return **HTTP 400** with a JSON describing the errors.
-
----
-
-## Error Handling
-
-- All errors are centrally handled in `server.js`
-- Example error response:
-
-```json
-{
-  "message": "Invalid Credentials"
-}
-```
-
-- Validation errors return an array of error objects:
-
-```json
-{
-  "errors": [
-    { "field": "email", "message": "Email is required" },
-    { "field": "password", "message": "Password must be at least 6 characters" }
-  ]
-}
-```
-
----
-
-## Project Structure
+## 📂 Project Structure
 
 ```
 project/
@@ -196,29 +224,31 @@ src/
 │   ├── user.model.js
 │   ├── user.route.js
 │   └── user.validator.js
-├── server.js          # App entry point
-├── package.json
-├── .env
-└── README.md
+└── server.js
 ```
 
 ---
 
-## Future Improvements
+## 🚀 Future Improvements
 
-- Implement **role-based access** (admin, normal user)
-- Add **pagination** for task listing
-- Add **search and filter** by priority or date
-- Add **unit and integration tests**
-- Improve **API documentation** using Swagger
-
----
-
-## Author
-
-**Muhammad Fuzail** – Backend Development Learner
-
-- GitHub: [your-github-link]
-- LinkedIn: [your-linkedin-link]
+* Separate logic into controller files
+* Add filtering and sorting with pagination
+* Implement role-based access (admin/user)
+* Add Swagger API documentation
+* Write unit/integration tests
 
 ---
+
+## 🙌 Acknowledgment
+
+Special thanks to [Hammad](https://www.linkedin.com/in/muhammad-hammad-shah-9a480b270/), who has been guiding me throughout this journey.
+Each step — from understanding the basics to implementing real backend features — became clearer with his mentorship.
+
+To this extent, backend development now feels relatable and powerful.
+I’ve started to truly feel the **strength of strong fundamentals**.
+Every engineer emphasizes fundamentals — and that’s absolutely true.
+Alhamdulillah, the comfort and clarity I have today are purely by the grace of **Allah**, who gave me the power to take action.
+He has power over everything.
+
+## Author **Muhammad Fuzail** – Backend Development Learner 
+- LinkedIn: [Muhammad Fuzail](https://www.linkedin.com/in/muhammad-fuzail-a554082b4/)
