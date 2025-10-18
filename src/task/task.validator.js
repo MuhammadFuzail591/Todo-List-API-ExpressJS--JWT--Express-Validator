@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator'
+import { body, param, query } from 'express-validator'
 
 export const taskCreateValidator = [
   body('name')
@@ -73,4 +73,9 @@ export const taskUpdateValidator = [
     .withMessage('Date should not be empty if provided.')
     .isDate({ format: 'YYYY-MM-DD' })
     .withMessage('Invalid date format. Expected YYYY-MM-DD.')
+]
+
+export const taskGetValidator = [
+  query('page').optional().isInt({ max: 10 }).toInt(),
+  query('limit').optional().isInt({ min: 1 }).toInt()
 ]

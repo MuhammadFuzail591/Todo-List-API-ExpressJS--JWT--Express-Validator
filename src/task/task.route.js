@@ -1,7 +1,11 @@
 import express from 'express'
 import { Task } from './task.model.js'
 import { auth } from '../middleware/auth.js'
-import { taskCreateValidator, taskUpdateValidator } from './task.validator.js'
+import {
+  taskCreateValidator,
+  taskGetValidator,
+  taskUpdateValidator
+} from './task.validator.js'
 import handleValidation from '../middleware/validate.js'
 
 const router = express.Router()
@@ -52,11 +56,26 @@ router.post(
     //   res.json({ message: 'Task created' })
   }
 )
-router.get('/get_all', async (req, res) => {
-  const tasks = await Task.find({})
+router.get('/get_all', taskGetValidator, handleValidation, async (req, res) => {
+  const pageNumber = Number(req.query.page) || 1
+  const responseLength = Number(req.query.limit) || 5
 
-  if (tasks) {
-    res.status(200).json(tasks)
+  const noOfDocumentsToSkip = (pageNumber - 1) * responseLength
+
+  const noOftotalTasks = await Task.countDocuments()
+  const totalPages = noOftotalTasks / responseLength
+
+  const tasks = await Task.find({})
+    .skip(noOfDocumentsToSkip)
+    .limit(responseLength)
+
+  if (tasks.length > 0) {
+    res.status(200).json({
+      totalTasks: noOftotalTasks,
+      currentPage: pageNumber,
+      totalPages: totalPages,
+      tasks: tasks
+    })
   } else {
     res.status(500).json({
       message: 'Something went wrong'
